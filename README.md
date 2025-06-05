@@ -1,28 +1,63 @@
-# Moonbit Github Workflows
-
-This CI configuration was modified from [moonbitlang/core CI](https://github.com/moonbitlang/core/blob/main/.github/workflows/check.yml)
-
-## Usage
-
-Change the `master` branch to your own
-
-```yaml
-## .github\workflows\check.yaml
-name: check
-
-on:
-  push:
-    branches:
-      - master
-  pull_request:
-```
-
-## Modified
-
-### remove 
-
-* moon bundle
-* coverage-check
-* license-header-check
+# illusory0x0/simple_parserc
 
 
+
+## Primitive combinators
+
+* `|`
+  * `lor` `or`
+* `label`
+
+
+## Monadic combinators
+
+* Monad 
+  * `bind`
+  * `pure` 
+  * `map`
+
+* helper function
+  * `map_srcpos`
+  * `discard_left`
+  * `discard_right`
+
+
+## Folding 
+
+* `foldl`
+* `foldl1`
+* `foldr`
+* `foldr1`
+* `many`
+* `many_each`
+
+## Derivatives of primitive combinators
+
+* `satisfy`
+* `char`
+* `one_of`
+* `none_of`
+* `string`
+* `eof`
+
+## `satisfy` helpler function 
+
+* `digit`
+* `space`
+* `alphabetic`
+* `any`
+* `space1`
+* `spaces`
+
+## Surrounding
+
+* `between`
+* `round_bracket`
+* `square_bracket`
+* `curly_bracket`
+
+## Reference
+
+[megaparsec](https://hackage.haskell.org/package/megaparsec)
+
+[opal](https://github.com/pyrocat101/opal)
