@@ -55,7 +55,7 @@ fn[A] pure(A) -> Parser[A]
 
 fn[A] round_bracket(Parser[A]) -> Parser[A]
 
-fn[A] run(Parser[A], Input) -> A!ParseError
+fn[A] run(Parser[A], Input) -> A raise ParseError
 
 fn satisfy((Char) -> Bool) -> Parser[Char]
 
@@ -78,14 +78,14 @@ pub(all) struct Input {
 fn Input::new(@string.StringView) -> Self
 impl Show for Input
 
-pub(all) type! ParseError {
+pub(all) suberror ParseError {
   Many(Array[ParseError])
   Expect(row~ : Int, col~ : Int, String)
 }
 fn ParseError::flatten(Self) -> Self
 impl Show for ParseError
 
-pub(all) type Parser[A] (Input) -> (A, Input)!ParseError
+pub(all) type Parser[A] (Input) -> (A, Input) raise ParseError
 fn[A, B, C] Parser::between(Self[A], open~ : Self[B], close~ : Self[C]) -> Self[A]
 fn[A, B] Parser::bind(Self[A], (A) -> Self[B]) -> Self[B]
 fn Parser::char(Char) -> Self[Char]
@@ -108,7 +108,7 @@ fn Parser::one_of(String) -> Self[Char]
 fn[A] Parser::or(Self[A], Self[A]) -> Self[A]
 fn[A] Parser::pure(A) -> Self[A]
 fn[A] Parser::round_bracket(Self[A]) -> Self[A]
-fn[A] Parser::run(Self[A], Input) -> A!ParseError
+fn[A] Parser::run(Self[A], Input) -> A raise ParseError
 fn Parser::satisfy((Char) -> Bool) -> Self[Char]
 fn[A] Parser::square_bracket(Self[A]) -> Self[A]
 fn Parser::string(String) -> Self[String]

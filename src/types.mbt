@@ -12,10 +12,10 @@ pub(all) struct Input {
 } derive(Show)
 
 ///|
-pub(all) type! ParseError {
+pub(all) suberror ParseError {
   Many(Array[ParseError])
   Expect(row~ : Int, col~ : Int, String)
 } derive(Show)
 
 ///|
-pub(all) type Parser[A] (Input) -> (A, Input)!ParseError
+pub(all) type Parser[A] (Input) -> (A, Input) raise ParseError
