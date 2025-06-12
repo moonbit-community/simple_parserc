@@ -86,7 +86,7 @@ let parser : Parser[Raw] = {
     })
     .label("name")
   let var = name.map(RVar(_))
-  fn lam(input : Input) -> (Raw, Input)!ParseError {
+  fn lam(input : Input) -> (Raw, Input) raise ParseError {
     let fun = string("fun").discard_spaces()
     let x = name.discard_spaces()
     let t = discard_spaces(expr)
@@ -96,14 +96,14 @@ let parser : Parser[Raw] = {
     lam.round_bracket()(input)
   }
 
-  fn app(input : Input) -> (Raw, Input)!ParseError {
+  fn app(input : Input) -> (Raw, Input) raise ParseError {
     let t = discard_spaces(expr)
     let u = discard_spaces(expr)
     let app = t.bind(fn { t => u.map(fn { u => RApp(t, u) }) })
     app.round_bracket()(input)
   }
 
-  fn expr(input : Input) -> (Raw, Input)!ParseError {
+  fn expr(input : Input) -> (Raw, Input) raise ParseError {
     let expr = (lam : Parser[_]) | app | var
     expr.label("expr").map_srcpos(RSrcPos(_, _))(input)
   }
@@ -119,7 +119,7 @@ test "parse" {
 }
 
 ///|
-typealias Env = List[Val]
+typealias List[Val] as Env
 
 ///|
 enum Closure {
@@ -140,7 +140,7 @@ fn Closure::app(self : Closure, u : Val) -> Val {
 }
 
 ///|
-type! ScopeError {
+suberror ScopeError {
   ScopeError(SourcePos, String, List[String])
 }
 
@@ -205,19 +205,8 @@ fn Tm::nf(self : Tm, env : Env) -> Tm {
 }
 
 ///|
-fn[A] find_index(self : List[A], f : (A) -> Bool) -> Int? {
-  let mut idx = 0
-  for x in self {
-    guard not(f(x)) else { break Some(idx) }
-    idx += 1
-  } else {
-    None
-  }
-}
-
-///|
-fn Raw::to_tm(self : Raw) -> Tm! {
-  fn dfs(raw : Raw, ns : List[Name], pos : SourcePos) -> Tm! {
+fn Raw::to_tm(self : Raw) -> Tm raise {
+  fn dfs(raw : Raw, ns : List[Name], pos : SourcePos) -> Tm raise {
     match raw {
       RLam(x, t) => Lam(x, dfs(t, cons(x, ns), pos))
       RApp(t, u) => App(dfs(t, ns, pos), dfs(u, ns, pos))

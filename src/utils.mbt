@@ -18,7 +18,7 @@ pub fn ParseError::flatten(self : Self) -> Self {
 }
 
 ///|
-pub fn[A] Parser::run(self : Parser[A], input : Input) -> A!ParseError {
+pub fn[A] Parser::run(self : Parser[A], input : Input) -> A raise ParseError {
   self(input).0
 }
 

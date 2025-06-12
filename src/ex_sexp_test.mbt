@@ -22,12 +22,12 @@ test "sexp" {
       buffer.reset()
       res
     })
-  fn list(input : Input) -> (Sexp, Input)!ParseError {
+  fn list(input : Input) -> (Sexp, Input) raise ParseError {
     let expr : Parser[Sexp] = expr
     expr.discard_spaces().many().round_bracket().map(List(_))(input)
   }
 
-  fn expr(input : Input) -> (Sexp, Input)!ParseError {
+  fn expr(input : Input) -> (Sexp, Input) raise ParseError {
     Parser::lor(list, atom)(input)
   }
 

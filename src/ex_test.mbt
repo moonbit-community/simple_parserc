@@ -62,15 +62,15 @@ test "calculator" {
   let sub = char('-').discard_left(pure(Int::op_sub))
   let mul = char('*').discard_left(pure(Int::op_mul))
   let div = char('/').discard_left(pure(Int::op_div))
-  fn expr(input) -> (Int, Input)!ParseError {
+  fn expr(input) -> (Int, Input) raise ParseError {
     foldl1(term, add | sub)(input)
   }
 
-  fn term(input) -> (Int, Input)!ParseError {
+  fn term(input) -> (Int, Input) raise ParseError {
     foldl1(factor, mul | div)(input)
   }
 
-  fn factor(input) -> (Int, Input)!ParseError {
+  fn factor(input) -> (Int, Input) raise ParseError {
     (Parser::round_bracket(expr) | integer)(input)
   }
 
