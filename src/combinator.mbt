@@ -1,11 +1,8 @@
 ///|
 pub impl[A] BitOr for Parser[A] with lor(x, y) {
   fn(input) {
-    try x(input) catch {
-      e =>
-        try y(input) catch {
-          e_ => raise Many([e, e_]).flatten()
-        }
+    x(input) catch {
+      e => y(input) catch { e_ => raise Many([e, e_]).flatten() }
     }
   }
 }
@@ -13,9 +10,11 @@ pub impl[A] BitOr for Parser[A] with lor(x, y) {
 ///|
 pub fn[A] Parser::label(x : Parser[A], s : String) -> Parser[A] {
   fn(input) {
-    try x(input) catch {
-      Expect(row~, col~, _) => raise Expect(row~, col~, s)
-      Many([Expect(row~, col~, _), ..]) => raise Expect(row~, col~, s)
+    x(input) catch {
+      Expect(row~, col~, _) as prev =>
+        raise Many([Expect(row~, col~, s), prev]).flatten()
+      Many([Expect(row~, col~, _), ..]) as prev =>
+        raise Many([Expect(row~, col~, s), prev]).flatten()
       Many(_) => panic()
     }
   }

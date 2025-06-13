@@ -103,7 +103,12 @@ test "or" {
   inspect(
     try? parse(Input::new("_")),
     content=
-      #|Err(Expect(row=0, col=0, "x or y"))
+      #|Err( Parse Error:0:0: x or y is expected
+      #| Parse Error:0:0: x is expected
+      #| Parse Error:0:0:  is expected
+      #| Parse Error:0:0: y is expected
+      #| Parse Error:0:0:  is expected
+      #|)
     ,
   )
 }
@@ -115,13 +120,18 @@ test "error" {
   inspect(
     try? parse(input),
     content=
-      #|Err(Expect(row=0, col=0, "x"))
+      #|Err( Parse Error:0:0: x is expected
+      #| Parse Error:0:0:  is expected
+      #|)
     ,
   )
   inspect(
     try? label(parse, "?")(input),
     content=
-      #|Err(Expect(row=0, col=0, "?"))
+      #|Err( Parse Error:0:0: ? is expected
+      #| Parse Error:0:0: x is expected
+      #| Parse Error:0:0:  is expected
+      #|)
     ,
   )
 }
@@ -138,7 +148,9 @@ test "digit" {
   inspect(
     try? digit.run(input("_")),
     content=
-      #|Err(Expect(row=0, col=0, "digit"))
+      #|Err( Parse Error:0:0: digit is expected
+      #| Parse Error:0:0:  is expected
+      #|)
     ,
   )
 }
@@ -149,7 +161,9 @@ test "space" {
   inspect(
     try? space.run(input("_")),
     content=
-      #|Err(Expect(row=0, col=0, "space"))
+      #|Err( Parse Error:0:0: space is expected
+      #| Parse Error:0:0:  is expected
+      #|)
     ,
   )
 }
@@ -160,7 +174,9 @@ test "alphabetic" {
   inspect(
     try? alphabetic.run(input("_")),
     content=
-      #|Err(Expect(row=0, col=0, "alphabetic"))
+      #|Err( Parse Error:0:0: alphabetic is expected
+      #| Parse Error:0:0:  is expected
+      #|)
     ,
   )
 }
@@ -177,7 +193,10 @@ test "space1" {
   inspect(
     try? space1.run(input("")),
     content=
-      #|Err(Expect(row=0, col=0, "space1"))
+      #|Err( Parse Error:0:0: space1 is expected
+      #| Parse Error:0:0: space is expected
+      #| Parse Error:0:0:  is expected
+      #|)
     ,
   )
 }
@@ -201,4 +220,19 @@ test "between" {
   inspect(x.run(input("() ")), content="0")
   inspect(x.run(input("( )")), content="0")
   inspect(x.run(input(" ( ) ")), content="0")
+}
+
+///|
+test "label" {
+  let rb = char(')').label("lambda").label("expr")
+  inspect(
+    try? rb.run(input("")),
+    content=
+      #|Err( Parse Error:0:0: expr is expected
+      #| Parse Error:0:0: lambda is expected
+      #| Parse Error:0:0: ) is expected
+      #| Parse Error:0:0:  is expected
+      #|)
+    ,
+  )
 }
