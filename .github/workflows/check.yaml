@@ -15,7 +15,7 @@ jobs:
   check:
     strategy:
       matrix:
-        version: [bleeding]
+        version: [stable,pre-release,bleeding]
         os:
           - name: ubuntu-latest
             triple: x86_64-linux-gnu
