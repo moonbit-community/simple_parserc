@@ -103,11 +103,10 @@ test "or" {
   inspect(
     try? parse(Input::new("_")),
     content=
-      #|Err( Parse Error:0:0: x or y is expected
-      #| Parse Error:0:0: x is expected
-      #| Parse Error:0:0:  is expected
-      #| Parse Error:0:0: y is expected
-      #| Parse Error:0:0:  is expected
+      #|Err(
+      #|Parse Error:0:0:
+      #|    x or y is expected
+      #|    y is expected
       #|)
     ,
   )
@@ -120,17 +119,19 @@ test "error" {
   inspect(
     try? parse(input),
     content=
-      #|Err( Parse Error:0:0: x is expected
-      #| Parse Error:0:0:  is expected
+      #|Err(
+      #|Parse Error:0:0:
+      #|    x is expected
       #|)
     ,
   )
   inspect(
     try? label(parse, "?")(input),
     content=
-      #|Err( Parse Error:0:0: ? is expected
-      #| Parse Error:0:0: x is expected
-      #| Parse Error:0:0:  is expected
+      #|Err(
+      #|Parse Error:0:0:
+      #|    ? is expected
+      #|    x is expected
       #|)
     ,
   )
@@ -148,8 +149,9 @@ test "digit" {
   inspect(
     try? digit.run(input("_")),
     content=
-      #|Err( Parse Error:0:0: digit is expected
-      #| Parse Error:0:0:  is expected
+      #|Err(
+      #|Parse Error:0:0:
+      #|    digit is expected
       #|)
     ,
   )
@@ -161,8 +163,9 @@ test "space" {
   inspect(
     try? space.run(input("_")),
     content=
-      #|Err( Parse Error:0:0: space is expected
-      #| Parse Error:0:0:  is expected
+      #|Err(
+      #|Parse Error:0:0:
+      #|    space is expected
       #|)
     ,
   )
@@ -174,8 +177,9 @@ test "alphabetic" {
   inspect(
     try? alphabetic.run(input("_")),
     content=
-      #|Err( Parse Error:0:0: alphabetic is expected
-      #| Parse Error:0:0:  is expected
+      #|Err(
+      #|Parse Error:0:0:
+      #|    alphabetic is expected
       #|)
     ,
   )
@@ -193,9 +197,10 @@ test "space1" {
   inspect(
     try? space1.run(input("")),
     content=
-      #|Err( Parse Error:0:0: space1 is expected
-      #| Parse Error:0:0: space is expected
-      #| Parse Error:0:0:  is expected
+      #|Err(
+      #|Parse Error:0:0:
+      #|    space1 is expected
+      #|    space is expected
       #|)
     ,
   )
@@ -228,10 +233,43 @@ test "label" {
   inspect(
     try? rb.run(input("")),
     content=
-      #|Err( Parse Error:0:0: expr is expected
-      #| Parse Error:0:0: lambda is expected
-      #| Parse Error:0:0: ) is expected
-      #| Parse Error:0:0:  is expected
+      #|Err(
+      #|Parse Error:0:0:
+      #|    expr is expected
+      #|    lambda is expected
+      #|    ) is expected
+      #|)
+    ,
+  )
+}
+
+///|
+test "SourcePos::compare" {
+  fn srcpos(row, col) {
+    SourcePos::{ row, col }
+  }
+
+  inspect(srcpos(0, 1) < srcpos(0, 2), content="true")
+  inspect(srcpos(1, 0) > srcpos(0, 2), content="true")
+}
+
+///|
+test "branch" {
+  let x = char('x')
+  let y = char('y')
+  let fst = x
+    .label("x1")
+    .discard_left(x.label("x2"))
+    .discard_left(x.label("x3"))
+  let snd = x.label("x1").discard_left(y.label("y2"))
+  let s = input("xx")
+  inspect(
+    try? (fst | snd).run(s),
+    content=
+      #|Err(
+      #|Parse Error:0:2:
+      #|    x3 is expected
+      #|    x is expected
       #|)
     ,
   )

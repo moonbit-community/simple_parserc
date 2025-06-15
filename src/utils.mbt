@@ -4,20 +4,6 @@ pub fn Input::new(chars : @string.View) -> Input {
 }
 
 ///|
-pub fn ParseError::flatten(self : Self) -> Self {
-  let xs = []
-  fn dfs(root : ParseError) -> Unit {
-    match root {
-      Many(children) => children.each(dfs)
-      Expect(_) => xs.push(root)
-    }
-  }
-
-  dfs(self)
-  Many(xs)
-}
-
-///|
 pub fn[A] Parser::run(self : Parser[A], input : Input) -> A raise ParseError {
   self(input).0
 }
@@ -61,3 +47,24 @@ pub fnalias Parser::(
 pub fn[A] Parser::or(x : Parser[A], y : Parser[A]) -> Parser[A] {
   x | y
 }
+
+///|
+pub fn ParseError::expect(row~ : Int, col~ : Int, msg : String) -> ParseError {
+  ParseError({ row, col }, @list.singleton(msg))
+}
+
+///|
+pub fn ParseError::source_pos(self : ParseError) -> SourcePos {
+  let ParseError(pos, _) = self
+  // xs.unsafe_head().0
+  pos
+}
+
+///|
+pub fn ParseError::cons(self : ParseError, x : String) -> ParseError {
+  let ParseError(pos, xs) = self
+  ParseError(pos, @list.construct(x, xs))
+}
+
+///|
+pub fnalias ParseError::expect

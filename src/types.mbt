@@ -2,7 +2,7 @@
 pub(all) struct SourcePos {
   row : Int
   col : Int
-} derive(Show)
+} derive(Show, Eq, Compare)
 
 ///|
 pub(all) struct Input {
@@ -12,9 +12,11 @@ pub(all) struct Input {
 } derive(Show)
 
 ///|
+pub typealias @list.T as List
+
+///|
 pub(all) suberror ParseError {
-  Many(Array[ParseError])
-  Expect(row~ : Int, col~ : Int, String)
+  ParseError(SourcePos, List[String])
 }
 
 ///|
@@ -22,16 +24,18 @@ pub(all) type Parser[A] (Input) -> (A, Input) raise ParseError
 
 ///|
 pub impl Show for ParseError with output(self, logger) {
-  match self {
-    Many(xs) =>
-      for x in xs {
-        logger.write_object(x)
-        logger.write_string("\n")
-      }
-    Expect(row~, col~, msg) =>
-      logger.write_string(
-        $| Parse Error:\{row}:\{col}: \{msg} is expected
-        ,
-      )
+  let ParseError({ row, col }, xs) = self
+  logger.write_string(
+    $|
+    $|Parse Error:\{row}:\{col}:
+    $|
+    ,
+  )
+  for msg in xs {
+    logger.write_string(
+      $|    \{msg} is expected
+      $|
+      ,
+    )
   }
 }
