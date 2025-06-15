@@ -1,6 +1,7 @@
 package "illusory0x0/simple_parserc"
 
 import(
+  "moonbitlang/core/list"
   "moonbitlang/core/string"
 )
 
@@ -26,6 +27,8 @@ fn[A, B] discard_right(Parser[A], Parser[B]) -> Parser[A]
 fn[A] discard_spaces(Parser[A]) -> Parser[A]
 
 fn[A] eof(A) -> Parser[A]
+
+fn expect(row~ : Int, col~ : Int, String) -> ParseError
 
 fn[A, B] foldl(Parser[A], Parser[B], Parser[(B, A) -> B]) -> Parser[B]
 
@@ -57,7 +60,7 @@ fn[A] round_bracket(Parser[A]) -> Parser[A]
 
 fn[A] run(Parser[A], Input) -> A raise ParseError
 
-fn satisfy((Char) -> Bool) -> Parser[Char]
+fn satisfy((Char) -> Bool, label~ : String) -> Parser[Char]
 
 let space : Parser[Char]
 
@@ -79,10 +82,11 @@ fn Input::new(@string.StringView) -> Self
 impl Show for Input
 
 pub(all) suberror ParseError {
-  Many(Array[ParseError])
-  Expect(row~ : Int, col~ : Int, String)
+  ParseError(SourcePos, @list.T[String])
 }
-fn ParseError::flatten(Self) -> Self
+fn ParseError::cons(Self, String) -> Self
+fn ParseError::expect(row~ : Int, col~ : Int, String) -> Self
+fn ParseError::source_pos(Self) -> SourcePos
 impl Show for ParseError
 
 pub(all) type Parser[A] (Input) -> (A, Input) raise ParseError
@@ -109,7 +113,7 @@ fn[A] Parser::or(Self[A], Self[A]) -> Self[A]
 fn[A] Parser::pure(A) -> Self[A]
 fn[A] Parser::round_bracket(Self[A]) -> Self[A]
 fn[A] Parser::run(Self[A], Input) -> A raise ParseError
-fn Parser::satisfy((Char) -> Bool) -> Self[Char]
+fn Parser::satisfy((Char) -> Bool, label~ : String) -> Self[Char]
 fn[A] Parser::square_bracket(Self[A]) -> Self[A]
 fn Parser::string(String) -> Self[String]
 impl[A] BitOr for Parser[A]
@@ -118,9 +122,12 @@ pub(all) struct SourcePos {
   row : Int
   col : Int
 }
+impl Compare for SourcePos
+impl Eq for SourcePos
 impl Show for SourcePos
 
 // Type aliases
+pub typealias List[A] = @list.T[A]
 
 // Traits
 

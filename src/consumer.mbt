@@ -1,5 +1,5 @@
 ///|
-pub fn Parser::satisfy(f : (Char) -> Bool) -> Parser[Char] {
+pub fn Parser::satisfy(f : (Char) -> Bool, label~ : String) -> Parser[Char] {
   fn(input) {
     let { chars, row, col } = input
     match chars {
@@ -9,25 +9,26 @@ pub fn Parser::satisfy(f : (Char) -> Bool) -> Parser[Char] {
         } else {
           (x, Input::{ ..input, chars, col: col + 1 })
         }
-      _ => raise Expect(row~, col~, "")
+      _ => raise expect(row~, col~, label)
     }
   }
 }
 
 ///|
 pub fn Parser::char(ch : Char) -> Parser[Char] {
-  satisfy(fn { c => c == ch }).label(ch.to_string())
+  satisfy(fn { c => c == ch }, label=ch.to_string())
 }
 
 ///|
 pub fn Parser::one_of(xs : String) -> Parser[Char] {
-  satisfy(String::contains_char(xs, _)).label("one of \{xs.iter()}}")
+  satisfy(String::contains_char(xs, _), label="one of \{xs.iter()}}")
 }
 
 ///|
 pub fn Parser::none_of(xs : String) -> Parser[Char] {
-  satisfy(fn { ch => not(String::contains_char(xs, ch)) }).label(
-    "none of \{xs.iter()}}",
+  satisfy(
+    fn { ch => not(String::contains_char(xs, ch)) },
+    label="none of \{xs.iter()}}",
   )
 }
 
@@ -38,7 +39,7 @@ pub fn Parser::string(str : String) -> Parser[String] {
     let { chars, row, col } = input
     let len = str.length()
     guard chars.length() >= len && chars.view(end_offset=len) == str else {
-      raise Expect(row~, col~, str)
+      raise expect(row~, col~, str)
     }
     (
       str,
@@ -53,7 +54,7 @@ pub fn[A] Parser::eof(x : A) -> Parser[A] {
     let { chars, row, col } = input
     match chars {
       [] => (x, input)
-      _ => raise Expect(row~, col~, "eof")
+      _ => raise expect(row~, col~, "eof")
     }
   }
 }
