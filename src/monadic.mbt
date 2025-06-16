@@ -13,7 +13,7 @@ pub fn[A] Parser::pure(x : A) -> Parser[A] {
 
 ///|
 pub fn[A, B] Parser::map(self : Parser[A], f : (A) -> B) -> Parser[B] {
-  self.bind(fn { x => pure(f(x)) })
+  self.bind(x => pure(f(x)))
 }
 
 ///|
@@ -30,10 +30,10 @@ pub fn[A, B] Parser::map_srcpos(
 
 ///|
 pub fn[A, B] Parser::discard_left(x : Parser[A], y : Parser[B]) -> Parser[B] {
-  x.bind(fn { _ => y })
+  x.bind(_ => y)
 }
 
 ///|
 pub fn[A, B] Parser::discard_right(x : Parser[A], y : Parser[B]) -> Parser[A] {
-  x.bind(fn { r => y.bind(fn { _ => pure(r) }) })
+  x.bind(r => y.bind(_ => pure(r)))
 }
