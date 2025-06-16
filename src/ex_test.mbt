@@ -7,7 +7,7 @@ test "foldr/none" {
   let integer = foldr(
     digit,
     pure(0),
-    pure(fn { acc, x => acc * 10 + (Char::to_int(x) - '0'.to_int()) }),
+    pure((acc, x) => acc * 10 + (Char::to_int(x) - '0'.to_int())),
   )
   inspect(integer.run(input), content="654321")
 }
@@ -17,9 +17,9 @@ test "foldr/separator" {
   let input = Input::new("1_2_3_4_5_6")
   let integer = foldr(
     digit,
-    map(digit, fn { x => Char::to_int(x) - '0' }),
+    map(digit, x => Char::to_int(x) - '0'),
     char('_').discard_left(
-      pure(fn { acc, x => acc * 10 + (Char::to_int(x) - '0'.to_int()) }),
+      pure((acc, x) => acc * 10 + (Char::to_int(x) - '0'.to_int())),
     ),
   )
   inspect(integer.run(input), content="654321")
@@ -31,7 +31,7 @@ test "foldl/none" {
   let integer = foldl(
     digit,
     pure(0),
-    pure(fn { acc, x => acc * 10 + (Char::to_int(x) - '0'.to_int()) }),
+    pure((acc, x) => acc * 10 + (Char::to_int(x) - '0'.to_int())),
   )
   inspect(integer.run(input), content="123456")
 }
@@ -41,10 +41,8 @@ test "foldl/separator" {
   let input = Input::new("1_2_3_4_5_6")
   let integer = foldl(
     digit,
-    map(digit, fn { x => Char::to_int(x) - '0' }),
-    char('_').discard_left(
-      pure(fn { acc, x => acc * 10 + (Char::to_int(x) - '0') }),
-    ),
+    map(digit, x => Char::to_int(x) - '0'),
+    char('_').discard_left(pure((acc, x) => acc * 10 + (Char::to_int(x) - '0'))),
   )
   inspect(integer.run(input), content="123456")
 }
@@ -55,22 +53,20 @@ test "calculator" {
   let integer = foldl(
     digit,
     pure(0),
-    pure(fn { acc, x => acc * 10 + (Char::to_int(x) - '0'.to_int()) }),
+    pure((acc, x) => acc * 10 + (Char::to_int(x) - '0'.to_int())),
   )
   inspect(integer.run(input), content="123456")
   let add = char('+').discard_left(pure(Int::op_add))
   let sub = char('-').discard_left(pure(Int::op_sub))
   let mul = char('*').discard_left(pure(Int::op_mul))
   let div = char('/').discard_left(pure(Int::op_div))
-  fn expr(input) -> (Int, Input) raise ParseError {
+  letrec expr = fn(input) -> (Int, Input) raise ParseError {
     foldl1(term, add | sub)(input)
   }
-
-  fn term(input) -> (Int, Input) raise ParseError {
+  and term = fn(input) -> (Int, Input) raise ParseError {
     foldl1(factor, mul | div)(input)
   }
-
-  fn factor(input) -> (Int, Input) raise ParseError {
+  and factor = fn(input) -> (Int, Input) raise ParseError {
     (Parser::round_bracket(expr) | integer)(input)
   }
 
@@ -92,7 +88,7 @@ test "calculator" {
 test "or" {
   let x = char('x')
   let y = char('y')
-  let parse = x | y |> label("x or y")
+  let parse = (x | y) |> label("x or y")
   let input = Input::new("x")
   inspect(
     try? parse(input),

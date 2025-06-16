@@ -86,24 +86,20 @@ let parser : Parser[Raw] = {
     })
     .label("name")
   let var = name.map(RVar(_))
-  fn lam(input : Input) -> (Raw, Input) raise ParseError {
+  letrec lam = fn(input : Input) -> (Raw, Input) raise ParseError {
     let fun = string("fun").discard_spaces()
     let x = name.discard_spaces()
     let t = discard_spaces(expr)
-    let lam = fun.discard_left(
-      x.bind(fn { x => t.map(fn { t => RLam(x, t) }) }),
-    )
+    let lam = fun.discard_left(x.bind(x => t.map(t => RLam(x, t))))
     lam.round_bracket()(input)
   }
-
-  fn app(input : Input) -> (Raw, Input) raise ParseError {
+  and app = fn(input : Input) -> (Raw, Input) raise ParseError {
     let t = discard_spaces(expr)
     let u = discard_spaces(expr)
-    let app = t.bind(fn { t => u.map(fn { u => RApp(t, u) }) })
+    let app = t.bind(t => u.map(u => RApp(t, u)))
     app.round_bracket()(input)
   }
-
-  fn expr(input : Input) -> (Raw, Input) raise ParseError {
+  and expr = fn(input : Input) -> (Raw, Input) raise ParseError {
     let expr = (lam : Parser[_]) | app | var
     expr.label("expr").map_srcpos(RSrcPos(_, _))(input)
   }
