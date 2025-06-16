@@ -16,7 +16,7 @@ pub fn Parser::satisfy(f : (Char) -> Bool, label~ : String) -> Parser[Char] {
 
 ///|
 pub fn Parser::char(ch : Char) -> Parser[Char] {
-  satisfy(fn { c => c == ch }, label=ch.to_string())
+  satisfy(c => c == ch, label=ch.to_string())
 }
 
 ///|
@@ -27,7 +27,7 @@ pub fn Parser::one_of(xs : String) -> Parser[Char] {
 ///|
 pub fn Parser::none_of(xs : String) -> Parser[Char] {
   satisfy(
-    fn { ch => not(String::contains_char(xs, ch)) },
+    ch => not(String::contains_char(xs, ch)),
     label="none of \{xs.iter()}}",
   )
 }

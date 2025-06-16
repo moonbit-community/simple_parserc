@@ -102,6 +102,7 @@ fn[A, B] Parser::foldl(Self[A], Self[B], Self[(B, A) -> B]) -> Self[B]
 fn[A] Parser::foldl1(Self[A], Self[(A, A) -> A]) -> Self[A]
 fn[A, B] Parser::foldr(Self[A], Self[B], Self[(B, A) -> B]) -> Self[B]
 fn[A] Parser::foldr1(Self[A], Self[(A, A) -> A]) -> Self[A]
+fn[A] Parser::inner(Self[A]) -> (Input) -> (A, Input) raise ParseError
 fn[A] Parser::label(Self[A], String) -> Self[A]
 fn[A] Parser::many(Self[A]) -> Self[Array[A]]
 fn[A] Parser::many_each(Self[A], (A) -> Unit) -> Self[Unit]
@@ -127,7 +128,7 @@ impl Eq for SourcePos
 impl Show for SourcePos
 
 // Type aliases
-pub typealias List[A] = @list.T[A]
+pub typealias @list.T as List
 
 // Traits
 

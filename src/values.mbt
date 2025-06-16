@@ -11,12 +11,10 @@ pub let alphabetic : Parser[Char] = satisfy(
 )
 
 ///|
-pub let any : Parser[Char] = satisfy(fn { _ => true }, label="any character")
+pub let any : Parser[Char] = satisfy(_ => true, label="any character")
 
 ///|
-pub let space1 : Parser[Char] = space
-  .foldl1(pure(fn { _, y => y }))
-  .label("space1")
+pub let space1 : Parser[Char] = space.foldl1(pure((_, y) => y)).label("space1")
 
 ///|
 pub let spaces : Parser[Char] = (space1 | pure(' ')).label("spaces")
