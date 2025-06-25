@@ -85,7 +85,7 @@ let parser : Parser[Raw] = {
       res
     })
     .label("name")
-  let var = name.map(RVar(_))
+  let var_ = name.map(RVar(_))
   letrec lam = fn(input : Input) -> (Raw, Input) raise ParseError {
     let fun = string("fun").discard_spaces()
     let x = name.discard_spaces()
@@ -100,7 +100,7 @@ let parser : Parser[Raw] = {
     app.round_bracket()(input)
   }
   and expr = fn(input : Input) -> (Raw, Input) raise ParseError {
-    let expr = (lam : Parser[_]) | app | var
+    let expr = (lam : Parser[_]) | app | var_
     expr.label("expr").map_srcpos(RSrcPos(_, _))(input)
   }
 
