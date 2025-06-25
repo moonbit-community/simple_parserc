@@ -252,10 +252,19 @@ test "chunch" {
 }
 
 ///|
+fn[T : Compare] max(x : T, y : T) -> T {
+  if x > y {
+    x
+  } else {
+    y
+  }
+}
+
+///|
 fn srcpos_depth(self : Raw) -> Int {
   match self {
     RLam(_, t) => t.srcpos_depth()
-    RApp(t, u) => @math.maximum(t.srcpos_depth(), u.srcpos_depth())
+    RApp(t, u) => max(t.srcpos_depth(), u.srcpos_depth())
     RVar(_) => 0
     RSrcPos(_, e) => 1 + e.srcpos_depth()
   }
