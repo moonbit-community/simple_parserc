@@ -40,14 +40,11 @@ impl Show for Raw with output(self, logger) {
 }
 
 ///|
-typealias @list.T as List
-
-///|
-fnalias @list.(construct as cons, empty)
+fnalias @list.(cons, empty)
 
 ///|
 impl Show for Tm with output(self, logger) {
-  fn dfs(root : Tm, ns : List[Name]) {
+  fn dfs(root : Tm, ns : @list.List[Name]) {
     match root {
       App(t, u) => {
         logger.write_char('(')
@@ -115,7 +112,7 @@ test "parse" {
 }
 
 ///|
-typealias List[Val] as Env
+typealias @list.List[Val] as Env
 
 ///|
 enum Closure {
@@ -137,7 +134,7 @@ fn Closure::app(self : Closure, u : Val) -> Val {
 
 ///|
 suberror ScopeError {
-  ScopeError(SourcePos, String, List[String])
+  ScopeError(SourcePos, String, @list.List[String])
 }
 
 ///|
@@ -202,7 +199,7 @@ fn Tm::nf(self : Tm, env : Env) -> Tm {
 
 ///|
 fn Raw::to_tm(self : Raw) -> Tm raise {
-  fn dfs(raw : Raw, ns : List[Name], pos : SourcePos) -> Tm raise {
+  fn dfs(raw : Raw, ns : @list.List[Name], pos : SourcePos) -> Tm raise {
     match raw {
       RLam(x, t) => Lam(x, dfs(t, cons(x, ns), pos))
       RApp(t, u) => App(dfs(t, ns, pos), dfs(u, ns, pos))

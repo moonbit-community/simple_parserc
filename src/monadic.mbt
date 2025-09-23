@@ -19,7 +19,7 @@ pub fn[A, B] Parser::map(self : Parser[A], f : (A) -> B) -> Parser[B] {
 ///|
 pub fn[A, B] Parser::map_srcpos(
   self : Parser[A],
-  f : (SourcePos, A) -> B
+  f : (SourcePos, A) -> B,
 ) -> Parser[B] {
   fn(input) {
     let { row, col, .. } = input

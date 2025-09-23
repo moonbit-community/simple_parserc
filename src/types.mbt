@@ -12,30 +12,18 @@ pub(all) struct Input {
 } derive(Show)
 
 ///|
-pub typealias @list.T as List
-
-///|
 pub(all) suberror ParseError {
-  ParseError(SourcePos, List[String])
+  ParseError(SourcePos, @list.List[String])
 }
 
 ///|
-pub(all) type Parser[A] (Input) -> (A, Input) raise ParseError
+pub(all) struct Parser[A]((Input) -> (A, Input) raise ParseError)
 
 ///|
 pub impl Show for ParseError with output(self, logger) {
   let ParseError({ row, col }, xs) = self
-  logger.write_string(
-    $|
-    $|Parse Error:\{row}:\{col}:
-    $|
-    ,
-  )
+  logger.write_string("\nParse Error:\{row}:\{col}:\n")
   for msg in xs {
-    logger.write_string(
-      $|    \{msg} is expected
-      $|
-      ,
-    )
+    logger.write_string("    \{msg} is expected\n")
   }
 }

@@ -2,7 +2,7 @@
 pub fn[A, B, C] Parser::between(
   self : Parser[A],
   open~ : Parser[B],
-  close~ : Parser[C]
+  close~ : Parser[C],
 ) -> Parser[A] {
   open
   .discard_spaces()

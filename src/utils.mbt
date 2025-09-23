@@ -50,7 +50,7 @@ pub fn[A] Parser::or(x : Parser[A], y : Parser[A]) -> Parser[A] {
 
 ///|
 pub fn ParseError::expect(row~ : Int, col~ : Int, msg : String) -> ParseError {
-  ParseError({ row, col }, @list.singleton(msg))
+  ParseError({ row, col }, @list.List::singleton(msg))
 }
 
 ///|
@@ -63,7 +63,7 @@ pub fn ParseError::source_pos(self : ParseError) -> SourcePos {
 ///|
 pub fn ParseError::cons(self : ParseError, x : String) -> ParseError {
   let ParseError(pos, xs) = self
-  ParseError(pos, @list.construct(x, xs))
+  ParseError(pos, @list.List::cons(x, xs))
 }
 
 ///|

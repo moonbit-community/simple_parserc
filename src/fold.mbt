@@ -2,7 +2,7 @@
 pub fn[A, B] Parser::foldl(
   x : Parser[A],
   z : Parser[B],
-  f : Parser[(B, A) -> B]
+  f : Parser[(B, A) -> B],
 ) -> Parser[B] {
   fn(input) {
     let (z, zr) = z(input)
@@ -20,7 +20,7 @@ pub fn[A, B] Parser::foldl(
 pub fn[A, B] Parser::foldr(
   x : Parser[A],
   z : Parser[B],
-  f : Parser[(B, A) -> B]
+  f : Parser[(B, A) -> B],
 ) -> Parser[B] {
   fn(input) {
     let buffer = []
