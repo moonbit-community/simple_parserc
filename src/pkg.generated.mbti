@@ -1,0 +1,108 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "illusory0x0/simple_parserc"
+
+import(
+  "moonbitlang/core/list"
+)
+
+// Values
+pub let alphabetic : Parser[Char]
+
+pub let any : Parser[Char]
+
+pub let digit : Parser[Char]
+
+pub let space : Parser[Char]
+
+pub let space1 : Parser[Char]
+
+pub let spaces : Parser[Char]
+
+// Errors
+pub(all) suberror ParseError {
+  ParseError(SourcePos, @list.List[String])
+}
+pub fn ParseError::cons(Self, String) -> Self
+pub fn ParseError::expect(row~ : Int, col~ : Int, String) -> Self
+fnalias ParseError::expect
+pub fn ParseError::source_pos(Self) -> SourcePos
+pub impl Show for ParseError
+
+// Types and methods
+pub(all) struct Input {
+  chars : StringView
+  row : Int
+  col : Int
+}
+pub fn Input::new(StringView) -> Self
+pub impl Show for Input
+
+pub(all) struct Parser[A]((Input) -> (A, Input) raise ParseError)
+pub fn[A, B, C] Parser::between(Self[A], open~ : Self[B], close~ : Self[C]) -> Self[A]
+fnalias Parser::between
+pub fn[A, B] Parser::bind(Self[A], (A) -> Self[B]) -> Self[B]
+fnalias Parser::bind
+pub fn Parser::char(Char) -> Self[Char]
+fnalias Parser::char
+pub fn[A] Parser::curly_bracket(Self[A]) -> Self[A]
+fnalias Parser::curly_bracket
+pub fn[A, B] Parser::discard_left(Self[A], Self[B]) -> Self[B]
+fnalias Parser::discard_left
+pub fn[A, B] Parser::discard_right(Self[A], Self[B]) -> Self[A]
+fnalias Parser::discard_right
+pub fn[A] Parser::discard_spaces(Self[A]) -> Self[A]
+fnalias Parser::discard_spaces
+pub fn[A] Parser::eof(A) -> Self[A]
+fnalias Parser::eof
+pub fn[A, B] Parser::foldl(Self[A], Self[B], Self[(B, A) -> B]) -> Self[B]
+fnalias Parser::foldl
+pub fn[A] Parser::foldl1(Self[A], Self[(A, A) -> A]) -> Self[A]
+fnalias Parser::foldl1
+pub fn[A, B] Parser::foldr(Self[A], Self[B], Self[(B, A) -> B]) -> Self[B]
+fnalias Parser::foldr
+pub fn[A] Parser::foldr1(Self[A], Self[(A, A) -> A]) -> Self[A]
+fnalias Parser::foldr1
+#deprecated
+pub fn[A] Parser::inner(Self[A]) -> (Input) -> (A, Input) raise ParseError
+pub fn[A] Parser::label(Self[A], String) -> Self[A]
+fnalias Parser::label
+pub fn[A] Parser::many(Self[A]) -> Self[Array[A]]
+fnalias Parser::many
+pub fn[A] Parser::many_each(Self[A], (A) -> Unit) -> Self[Unit]
+fnalias Parser::many_each
+pub fn[A, B] Parser::map(Self[A], (A) -> B) -> Self[B]
+fnalias Parser::map
+pub fn[A, B] Parser::map_srcpos(Self[A], (SourcePos, A) -> B) -> Self[B]
+fnalias Parser::map_srcpos
+pub fn Parser::none_of(String) -> Self[Char]
+fnalias Parser::none_of
+pub fn Parser::one_of(String) -> Self[Char]
+fnalias Parser::one_of
+pub fn[A] Parser::or(Self[A], Self[A]) -> Self[A]
+fnalias Parser::or
+pub fn[A] Parser::pure(A) -> Self[A]
+fnalias Parser::pure
+pub fn[A] Parser::round_bracket(Self[A]) -> Self[A]
+fnalias Parser::round_bracket
+pub fn[A] Parser::run(Self[A], Input) -> A raise ParseError
+fnalias Parser::run
+pub fn Parser::satisfy((Char) -> Bool, label~ : String) -> Self[Char]
+fnalias Parser::satisfy
+pub fn[A] Parser::square_bracket(Self[A]) -> Self[A]
+fnalias Parser::square_bracket
+pub fn Parser::string(String) -> Self[String]
+fnalias Parser::string
+pub impl[A] BitOr for Parser[A]
+
+pub(all) struct SourcePos {
+  row : Int
+  col : Int
+}
+pub impl Compare for SourcePos
+pub impl Eq for SourcePos
+pub impl Show for SourcePos
+
+// Type aliases
+
+// Traits
+

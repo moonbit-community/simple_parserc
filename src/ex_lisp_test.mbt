@@ -1,5 +1,5 @@
 ///|
-typealias String as Name
+type Name = String
 
 ///|
 enum Raw {
@@ -40,7 +40,7 @@ impl Show for Raw with output(self, logger) {
 }
 
 ///|
-fnalias @list.(cons, empty)
+using @list {cons, empty}
 
 ///|
 impl Show for Tm with output(self, logger) {
@@ -112,7 +112,7 @@ test "parse" {
 }
 
 ///|
-typealias @list.List[Val] as Env
+type Env = @list.List[Val]
 
 ///|
 enum Closure {
@@ -206,8 +206,8 @@ fn Raw::to_tm(self : Raw) -> Tm raise {
       RVar(name) =>
         Ix(
           ns
-          .find_index(Eq::op_equal(_, name))
-          .or_error(ScopeError(pos, name, ns)),
+          .find_index(fn(x) { x == name })
+          .unwrap_or_error(ScopeError(pos, name, ns)),
         )
       RSrcPos(pos, e) => SrcPos(pos, dfs(e, ns, pos))
     }
@@ -258,7 +258,7 @@ fn[T : Compare] max(x : T, y : T) -> T {
 }
 
 ///|
-fn srcpos_depth(self : Raw) -> Int {
+fn Raw::srcpos_depth(self : Raw) -> Int {
   match self {
     RLam(_, t) => t.srcpos_depth()
     RApp(t, u) => max(t.srcpos_depth(), u.srcpos_depth())
@@ -268,7 +268,7 @@ fn srcpos_depth(self : Raw) -> Int {
 }
 
 ///|
-fn collect_srcpos(self : Raw) -> Array[SourcePos] {
+fn Raw::collect_srcpos(self : Raw) -> Array[SourcePos] {
   let res = []
   fn dfs(self) {
     match self {

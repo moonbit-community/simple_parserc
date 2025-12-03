@@ -1,5 +1,5 @@
 ///|
-pub fn Input::new(chars : @string.View) -> Input {
+pub fn Input::new(chars : StringView) -> Input {
   Input::{ chars, row: 0, col: 0 }
 }
 

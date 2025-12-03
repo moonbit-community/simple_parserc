@@ -56,10 +56,10 @@ test "calculator" {
     pure((acc, x) => acc * 10 + (Char::to_int(x) - '0'.to_int())),
   )
   inspect(integer.run(input), content="123456")
-  let add = char('+').discard_left(pure(Int::op_add))
-  let sub = char('-').discard_left(pure(Int::op_sub))
-  let mul = char('*').discard_left(pure(Int::op_mul))
-  let div = char('/').discard_left(pure(Int::op_div))
+  let add = char('+').discard_left(pure(Int::add))
+  let sub = char('-').discard_left(pure(Int::sub))
+  let mul = char('*').discard_left(pure(Int::mul))
+  let div = char('/').discard_left(pure(Int::div))
   letrec expr = fn(input) -> (Int, Input) raise ParseError {
     foldl1(term, add | sub)(input)
   }
@@ -214,7 +214,7 @@ test "pure" {
 }
 
 ///|
-test "between" {
+test "between/spaces" {
   let x = pure(0).round_bracket()
   inspect(x.run(input("()")), content="0")
   inspect(x.run(input(" ()")), content="0")
