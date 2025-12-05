@@ -1,5 +1,7 @@
 ///|
-fnalias Input::new as input
+fn input(chars : StringView) -> Input {
+  Input::new(chars)
+}
 
 ///|
 test "foldr/none" {
