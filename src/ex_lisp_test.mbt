@@ -1,5 +1,5 @@
 ///|
-typealias String as Name
+type Name = String
 
 ///|
 enum Raw {
@@ -14,7 +14,6 @@ enum Tm {
   Ix(Int)
   Lam(Name, Tm)
   App(Tm, Tm)
-  SrcPos(SourcePos, Tm)
 }
 
 ///|
@@ -40,7 +39,7 @@ impl Show for Raw with output(self, logger) {
 }
 
 ///|
-fnalias @list.(cons, empty)
+using @list {cons, empty}
 
 ///|
 impl Show for Tm with output(self, logger) {
@@ -64,7 +63,6 @@ impl Show for Tm with output(self, logger) {
         let name = ns.nth(ix).unwrap()
         logger.write_string(name)
       }
-      SrcPos(_, e) => dfs(e, ns)
     }
   }
 
@@ -112,7 +110,7 @@ test "parse" {
 }
 
 ///|
-typealias @list.List[Val] as Env
+type Env = @list.List[Val]
 
 ///|
 enum Closure {
@@ -165,7 +163,6 @@ fn Tm::eval(self : Tm, env : Env) -> Val {
       }
     Lam(x, t) => VLam(x, Closure(env, t))
     Ix(x) => env.nth(x).unwrap()
-    SrcPos(_, e) => e.eval(env)
   }
 }
 
@@ -206,10 +203,10 @@ fn Raw::to_tm(self : Raw) -> Tm raise {
       RVar(name) =>
         Ix(
           ns
-          .find_index(Eq::op_equal(_, name))
-          .or_error(ScopeError(pos, name, ns)),
+          .find_index(fn(x) { x == name })
+          .unwrap_or_error(ScopeError(pos, name, ns)),
         )
-      RSrcPos(pos, e) => SrcPos(pos, dfs(e, ns, pos))
+      RSrcPos(pos, e) => dfs(e, ns, pos)
     }
   }
 
@@ -235,7 +232,6 @@ test "chunch" {
   let five = five.to_tm()
   let add = add.to_tm()
   let mul = mul.to_tm()
-  let succ = succ.to_tm()
   let ten = App(App(add, five), five).nf(empty())
   inspect(
     ten,
@@ -246,47 +242,6 @@ test "chunch" {
     nat_25,
     content="(λ f.(λ x.(f (f (f (f (f (f (f (f (f (f (f (f (f (f (f (f (f (f (f (f (f (f (f (f (f x)))))))))))))))))))))))))))",
   )
-}
-
-///|
-fn[T : Compare] max(x : T, y : T) -> T {
-  if x > y {
-    x
-  } else {
-    y
-  }
-}
-
-///|
-fn srcpos_depth(self : Raw) -> Int {
-  match self {
-    RLam(_, t) => t.srcpos_depth()
-    RApp(t, u) => max(t.srcpos_depth(), u.srcpos_depth())
-    RVar(_) => 0
-    RSrcPos(_, e) => 1 + e.srcpos_depth()
-  }
-}
-
-///|
-fn collect_srcpos(self : Raw) -> Array[SourcePos] {
-  let res = []
-  fn dfs(self) {
-    match self {
-      RLam(_, t) => dfs(t)
-      RApp(t, u) => {
-        dfs(t)
-        dfs(u)
-      }
-      RVar(_) => ()
-      RSrcPos(pos, e) => {
-        res.push(pos)
-        dfs(e)
-      }
-    }
-  }
-
-  dfs(self)
-  res
 }
 
 ///|

@@ -1,4 +1,5 @@
 ///|
+#as_free_fn
 pub fn[A, B] Parser::foldl(
   x : Parser[A],
   z : Parser[B],
@@ -17,6 +18,7 @@ pub fn[A, B] Parser::foldl(
 }
 
 ///|
+#as_free_fn
 pub fn[A, B] Parser::foldr(
   x : Parser[A],
   z : Parser[B],
@@ -40,16 +42,19 @@ pub fn[A, B] Parser::foldr(
 }
 
 ///|
+#as_free_fn
 pub fn[A] Parser::foldr1(x : Parser[A], f : Parser[(A, A) -> A]) -> Parser[A] {
   foldr(x, x, f)
 }
 
 ///|
+#as_free_fn
 pub fn[A] Parser::foldl1(x : Parser[A], f : Parser[(A, A) -> A]) -> Parser[A] {
   foldl(x, x, f)
 }
 
 ///|
+#as_free_fn
 pub fn[A] Parser::many_each(x : Parser[A], f : (A) -> Unit) -> Parser[Unit] {
   fn(input) {
     let r = x(input)
@@ -64,6 +69,7 @@ pub fn[A] Parser::many_each(x : Parser[A], f : (A) -> Unit) -> Parser[Unit] {
 }
 
 ///|
+#as_free_fn
 pub fn[A] Parser::many(self : Parser[A]) -> Parser[Array[A]] {
   self.foldl(
     pure([]),

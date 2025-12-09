@@ -1,4 +1,5 @@
 ///|
+#as_free_fn
 pub fn[A, B, C] Parser::between(
   self : Parser[A],
   open~ : Parser[B],
@@ -12,16 +13,19 @@ pub fn[A, B, C] Parser::between(
 }
 
 ///|
+#as_free_fn
 pub fn[A] Parser::round_bracket(self : Parser[A]) -> Parser[A] {
   self.between(open=char('('), close=char(')'))
 }
 
 ///|
+#as_free_fn
 pub fn[A] Parser::square_bracket(self : Parser[A]) -> Parser[A] {
   self.between(open=char('['), close=char(']'))
 }
 
 ///|
+#as_free_fn
 pub fn[A] Parser::curly_bracket(self : Parser[A]) -> Parser[A] {
   self.between(open=char('{'), close=char('}'))
 }

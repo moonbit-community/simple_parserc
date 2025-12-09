@@ -1,4 +1,5 @@
 ///|
+#as_free_fn
 pub fn Parser::satisfy(f : (Char) -> Bool, label~ : String) -> Parser[Char] {
   fn(input) {
     let { chars, row, col } = input
@@ -15,16 +16,19 @@ pub fn Parser::satisfy(f : (Char) -> Bool, label~ : String) -> Parser[Char] {
 }
 
 ///|
+#as_free_fn
 pub fn Parser::char(ch : Char) -> Parser[Char] {
   satisfy(c => c == ch, label=ch.to_string())
 }
 
 ///|
+#as_free_fn
 pub fn Parser::one_of(xs : String) -> Parser[Char] {
   satisfy(String::contains_char(xs, _), label="one of \{xs.iter()}}")
 }
 
 ///|
+#as_free_fn
 pub fn Parser::none_of(xs : String) -> Parser[Char] {
   satisfy(
     ch => not(String::contains_char(xs, ch)),
@@ -33,6 +37,7 @@ pub fn Parser::none_of(xs : String) -> Parser[Char] {
 }
 
 ///|
+#as_free_fn
 pub fn Parser::string(str : String) -> Parser[String] {
   fn(input) {
     guard not(str.contains_char('\n')) else { panic() }
@@ -49,6 +54,7 @@ pub fn Parser::string(str : String) -> Parser[String] {
 }
 
 ///|
+#as_free_fn
 pub fn[A] Parser::eof(x : A) -> Parser[A] {
   fn(input) {
     let { chars, row, col } = input

@@ -6,7 +6,7 @@ pub(all) struct SourcePos {
 
 ///|
 pub(all) struct Input {
-  chars : @string.View
+  chars : StringView
   row : Int
   col : Int
 } derive(Show)
