@@ -24,7 +24,7 @@ pub fn Parser::char(ch : Char) -> Parser[Char] {
 ///|
 #as_free_fn
 pub fn Parser::one_of(xs : String) -> Parser[Char] {
-  satisfy(String::contains_char(xs, _), label="one of \{xs.iter()}}")
+  satisfy(String::contains_char(xs, _), label="one of \{xs.iterator()}}")
 }
 
 ///|
@@ -32,7 +32,7 @@ pub fn Parser::one_of(xs : String) -> Parser[Char] {
 pub fn Parser::none_of(xs : String) -> Parser[Char] {
   satisfy(
     ch => not(String::contains_char(xs, ch)),
-    label="none of \{xs.iter()}}",
+    label="none of \{xs.iterator()}}",
   )
 }
 
