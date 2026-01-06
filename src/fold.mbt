@@ -33,7 +33,7 @@ pub fn[A, B] Parser::foldr(
     }
     let (z, rest) = z(rest)
     let mut acc = z
-    for e in buffer.rev_iter() {
+    for e in buffer.rev_iterator() {
       let (x, f) = e
       acc = f(acc, x)
     }
