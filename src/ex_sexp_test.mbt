@@ -24,7 +24,7 @@ test "sexp" {
     })
   letrec list = fn(input : Input) -> (Sexp, Input) raise ParseError {
     let expr : Parser[Sexp] = expr
-    expr.discard_spaces().many().round_bracket().map(List(_))(input)
+    expr.discard_spaces().many().round_bracket().map(x => List(x))(input)
   }
   and expr = fn(input : Input) -> (Sexp, Input) raise ParseError {
     Parser::lor(list, atom)(input)

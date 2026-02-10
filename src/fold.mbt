@@ -5,7 +5,7 @@ pub fn[A, B] Parser::foldl(
   z : Parser[B],
   f : Parser[(B, A) -> B],
 ) -> Parser[B] {
-  fn(input) {
+  input => {
     let (z, zr) = z(input)
     let mut rest = zr
     let mut acc = z
@@ -24,7 +24,7 @@ pub fn[A, B] Parser::foldr(
   z : Parser[B],
   f : Parser[(B, A) -> B],
 ) -> Parser[B] {
-  fn(input) {
+  input => {
     let buffer = []
     let mut rest = input
     while (try? x(rest)) is Ok((x, xr)) && (try? f(xr)) is Ok((f, fr)) {
@@ -56,7 +56,7 @@ pub fn[A] Parser::foldl1(x : Parser[A], f : Parser[(A, A) -> A]) -> Parser[A] {
 ///|
 #as_free_fn
 pub fn[A] Parser::many_each(x : Parser[A], f : (A) -> Unit) -> Parser[Unit] {
-  fn(input) {
+  input => {
     let r = x(input)
     f(r.0)
     let mut rest = r.1

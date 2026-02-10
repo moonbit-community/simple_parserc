@@ -1,7 +1,7 @@
 ///|
 #as_free_fn
 pub fn Parser::satisfy(f : (Char) -> Bool, label~ : String) -> Parser[Char] {
-  fn(input) {
+  input => {
     let { chars, row, col } = input
     match chars {
       [x, .. chars] if f(x) =>
@@ -39,7 +39,7 @@ pub fn Parser::none_of(xs : String) -> Parser[Char] {
 ///|
 #as_free_fn
 pub fn Parser::string(str : String) -> Parser[String] {
-  fn(input) {
+  input => {
     guard not(str.contains_char('\n')) else { panic() }
     let { chars, row, col } = input
     let len = str.length()
@@ -56,7 +56,7 @@ pub fn Parser::string(str : String) -> Parser[String] {
 ///|
 #as_free_fn
 pub fn[A] Parser::eof(x : A) -> Parser[A] {
-  fn(input) {
+  input => {
     let { chars, row, col } = input
     match chars {
       [] => (x, input)

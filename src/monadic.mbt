@@ -1,7 +1,7 @@
 ///|
 #as_free_fn
 pub fn[A, B] Parser::bind(x : Parser[A], f : (A) -> Parser[B]) -> Parser[B] {
-  fn(input) {
+  input => {
     let (v, rest) = x(input)
     f(v)(rest)
   }
@@ -10,7 +10,7 @@ pub fn[A, B] Parser::bind(x : Parser[A], f : (A) -> Parser[B]) -> Parser[B] {
 ///|
 #as_free_fn
 pub fn[A] Parser::pure(x : A) -> Parser[A] {
-  fn(input) { (x, input) }
+  input => (x, input)
 }
 
 ///|
@@ -25,7 +25,7 @@ pub fn[A, B] Parser::map_srcpos(
   self : Parser[A],
   f : (SourcePos, A) -> B,
 ) -> Parser[B] {
-  fn(input) {
+  input => {
     let { row, col, .. } = input
     let (x, input) = self(input)
     (f(SourcePos::{ row, col }, x), input)
