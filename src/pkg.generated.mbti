@@ -63,8 +63,6 @@ pub fn[A] Parser::foldl1(Self[A], Self[(A, A) -> A]) -> Self[A]
 pub fn[A, B] Parser::foldr(Self[A], Self[B], Self[(B, A) -> B]) -> Self[B]
 #as_free_fn
 pub fn[A] Parser::foldr1(Self[A], Self[(A, A) -> A]) -> Self[A]
-#deprecated
-pub fn[A] Parser::inner(Self[A]) -> (Input) -> (A, Input) raise ParseError
 #as_free_fn
 pub fn[A] Parser::label(Self[A], String) -> Self[A]
 #as_free_fn
@@ -98,9 +96,7 @@ pub impl[A] BitOr for Parser[A]
 pub(all) struct SourcePos {
   row : Int
   col : Int
-}
-pub impl Compare for SourcePos
-pub impl Eq for SourcePos
+} derive(Compare, Eq)
 pub impl Show for SourcePos
 
 // Type aliases
