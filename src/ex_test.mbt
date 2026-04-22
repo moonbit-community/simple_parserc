@@ -78,7 +78,7 @@ test "calculator" {
   inspect(expr.run(Input::new("3*3+4*4")), content="25")
   let buf = StringBuilder::new(size_hint=100_000 * 5)
   buf.write_char('1')
-  for i in 0..<100_000 {
+  for _ in 0..<100_000 {
     buf.write_char('+')
     buf.write_char('1')
   }
