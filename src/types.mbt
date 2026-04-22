@@ -2,14 +2,36 @@
 pub(all) struct SourcePos {
   row : Int
   col : Int
-} derive(Show, Eq, Compare)
+} derive(Eq, Compare)
+
+///|
+pub impl Show for SourcePos with output(self, logger) {
+  let { row, col } = self
+  logger.write_string("{row: ")
+  logger.write_object(row)
+  logger.write_string(", col: ")
+  logger.write_object(col)
+  logger.write_char('}')
+}
 
 ///|
 pub(all) struct Input {
   chars : StringView
   row : Int
   col : Int
-} derive(Show)
+}
+
+///|
+pub impl Show for Input with output(self, logger) {
+  let { chars, row, col } = self
+  logger.write_string("{chars: ")
+  logger.write_object(chars)
+  logger.write_string(", row: ")
+  logger.write_object(row)
+  logger.write_string(", col: ")
+  logger.write_object(col)
+  logger.write_char('}')
+}
 
 ///|
 pub(all) suberror ParseError {
