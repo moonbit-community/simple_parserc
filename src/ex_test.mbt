@@ -4,6 +4,16 @@ fn input(chars : StringView) -> Input {
 }
 
 ///|
+fn[A] parse_error_to_string(f : () -> A raise ParseError) -> String {
+  try {
+    let _ = f()
+    "Ok"
+  } catch {
+    e => e.to_string()
+  }
+}
+
+///|
 test "foldr/none" {
   let input = Input::new("123456")
   let integer = foldr(
@@ -92,21 +102,12 @@ test "or" {
   let y = char('y')
   let parse = (x | y) |> label("x or y")
   let input = Input::new("x")
+  let (ch, rest) = parse(input)
+  inspect(ch, content="x")
+  inspect(rest.to_string() == "{chars: \"\", row: 0, col: 1}", content="true")
   inspect(
-    try? parse(input),
-    content=(
-      #|Ok(('x', {chars: "", row: 0, col: 1}))
-    ),
-  )
-  inspect(
-    try? parse(Input::new("_")),
-    content=(
-      #|Err(
-      #|Parse Error:0:0:
-      #|    x or y is expected
-      #|    y is expected
-      #|)
-    ),
+    parse_error_to_string(() => parse(Input::new("_"))),
+    content="\nParse Error:0:0:\n    x or y is expected\n    y is expected\n",
   )
 }
 
@@ -115,23 +116,12 @@ test "error" {
   let parse = char('x')
   let input = Input::new("_")
   inspect(
-    try? parse(input),
-    content=(
-      #|Err(
-      #|Parse Error:0:0:
-      #|    x is expected
-      #|)
-    ),
+    parse_error_to_string(() => parse(input)),
+    content="\nParse Error:0:0:\n    x is expected\n",
   )
   inspect(
-    try? label(parse, "?")(input),
-    content=(
-      #|Err(
-      #|Parse Error:0:0:
-      #|    ? is expected
-      #|    x is expected
-      #|)
-    ),
+    parse_error_to_string(() => label(parse, "?")(input)),
+    content="\nParse Error:0:0:\n    ? is expected\n    x is expected\n",
   )
 }
 
@@ -143,76 +133,55 @@ test "between" {
 
 ///|
 test "digit" {
-  inspect(try? digit.run(input("1")), content="Ok('1')")
+  inspect(digit.run(input("1")), content="1")
   inspect(
-    try? digit.run(input("_")),
-    content=(
-      #|Err(
-      #|Parse Error:0:0:
-      #|    digit is expected
-      #|)
-    ),
+    parse_error_to_string(() => digit.run(input("_"))),
+    content="\nParse Error:0:0:\n    digit is expected\n",
   )
 }
 
 ///|
 test "space" {
-  inspect(try? space.run(input(" ")), content="Ok(' ')")
+  inspect(space.run(input(" ")), content=" ")
   inspect(
-    try? space.run(input("_")),
-    content=(
-      #|Err(
-      #|Parse Error:0:0:
-      #|    space is expected
-      #|)
-    ),
+    parse_error_to_string(() => space.run(input("_"))),
+    content="\nParse Error:0:0:\n    space is expected\n",
   )
 }
 
 ///|
 test "alphabetic" {
-  inspect(try? alphabetic.run(input("a")), content="Ok('a')")
+  inspect(alphabetic.run(input("a")), content="a")
   inspect(
-    try? alphabetic.run(input("_")),
-    content=(
-      #|Err(
-      #|Parse Error:0:0:
-      #|    alphabetic is expected
-      #|)
-    ),
+    parse_error_to_string(() => alphabetic.run(input("_"))),
+    content="\nParse Error:0:0:\n    alphabetic is expected\n",
   )
 }
 
 ///|
 test "any" {
-  inspect(try? any.run(input("a")), content="Ok('a')")
-  inspect(try? any.run(input("_")), content="Ok('_')")
+  inspect(any.run(input("a")), content="a")
+  inspect(any.run(input("_")), content="_")
 }
 
 ///|
 test "space1" {
-  inspect(try? space1.run(input("  ")), content="Ok(' ')")
+  inspect(space1.run(input("  ")), content=" ")
   inspect(
-    try? space1.run(input("")),
-    content=(
-      #|Err(
-      #|Parse Error:0:0:
-      #|    space1 is expected
-      #|    space is expected
-      #|)
-    ),
+    parse_error_to_string(() => space1.run(input(""))),
+    content="\nParse Error:0:0:\n    space1 is expected\n    space is expected\n",
   )
 }
 
 ///|
 test "spaces" {
-  inspect(try? spaces.run(input("  ")), content="Ok(' ')")
-  inspect(try? spaces.run(input("")), content="Ok(' ')")
+  inspect(spaces.run(input("  ")), content=" ")
+  inspect(spaces.run(input("")), content=" ")
 }
 
 ///|
 test "pure" {
-  inspect(try? pure(1).run(input("")), content="Ok(1)")
+  inspect(pure(1).run(input("")), content="1")
 }
 
 ///|
@@ -229,15 +198,8 @@ test "between/spaces" {
 test "label" {
   let rb = char(')').label("lambda").label("expr")
   inspect(
-    try? rb.run(input("")),
-    content=(
-      #|Err(
-      #|Parse Error:0:0:
-      #|    expr is expected
-      #|    lambda is expected
-      #|    ) is expected
-      #|)
-    ),
+    parse_error_to_string(() => rb.run(input(""))),
+    content="\nParse Error:0:0:\n    expr is expected\n    lambda is expected\n    ) is expected\n",
   )
 }
 
@@ -262,13 +224,7 @@ test "branch" {
   let snd = x.label("x1").discard_left(y.label("y2"))
   let s = input("xx")
   inspect(
-    try? (fst | snd).run(s),
-    content=(
-      #|Err(
-      #|Parse Error:0:2:
-      #|    x3 is expected
-      #|    x is expected
-      #|)
-    ),
+    parse_error_to_string(() => (fst | snd).run(s)),
+    content="\nParse Error:0:2:\n    x3 is expected\n    x is expected\n",
   )
 }
