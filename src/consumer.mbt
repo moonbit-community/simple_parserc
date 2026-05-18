@@ -24,13 +24,13 @@ pub fn Parser::char(ch : Char) -> Parser[Char] {
 ///|
 #as_free_fn
 pub fn Parser::one_of(xs : String) -> Parser[Char] {
-  satisfy(x => String::contains_char(xs, x), label="one of \{xs.iter()}}")
+  satisfy(x => String::contains_char(xs, x), label="one of \{xs}")
 }
 
 ///|
 #as_free_fn
 pub fn Parser::none_of(xs : String) -> Parser[Char] {
-  satisfy(ch => !String::contains_char(xs, ch), label="none of \{xs.iter()}}")
+  satisfy(ch => !String::contains_char(xs, ch), label="none of \{xs}")
 }
 
 ///|
