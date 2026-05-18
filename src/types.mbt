@@ -15,6 +15,11 @@ pub impl Show for SourcePos with output(self, logger) {
 }
 
 ///|
+pub impl Debug for SourcePos with to_repr(self) {
+  Repr::literal(self.to_string())
+}
+
+///|
 pub(all) struct Input {
   chars : StringView
   row : Int
@@ -34,6 +39,11 @@ pub impl Show for Input with output(self, logger) {
 }
 
 ///|
+pub impl Debug for Input with to_repr(self) {
+  Repr::literal(self.to_string())
+}
+
+///|
 pub(all) suberror ParseError {
   ParseError(SourcePos, @list.List[String])
 }
@@ -48,4 +58,9 @@ pub impl Show for ParseError with output(self, logger) {
   for msg in xs {
     logger.write_string("    \{msg} is expected\n")
   }
+}
+
+///|
+pub impl Debug for ParseError with to_repr(self) {
+  Repr::literal(self.to_string())
 }

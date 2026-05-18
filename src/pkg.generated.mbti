@@ -2,6 +2,7 @@
 package "illusory0x0/simple_parserc"
 
 import {
+  "moonbitlang/core/debug",
   "moonbitlang/core/list",
 }
 
@@ -27,6 +28,7 @@ pub fn ParseError::cons(Self, String) -> Self
 pub fn ParseError::expect(row~ : Int, col~ : Int, String) -> Self
 pub fn ParseError::source_pos(Self) -> SourcePos
 pub impl Show for ParseError
+pub impl @debug.Debug for ParseError
 
 // Types and methods
 pub(all) struct Input {
@@ -37,6 +39,7 @@ pub(all) struct Input {
 #as_free_fn
 pub fn Input::new(StringView) -> Self
 pub impl Show for Input
+pub impl @debug.Debug for Input
 
 pub(all) struct Parser[A]((Input) -> (A, Input) raise ParseError)
 #as_free_fn
@@ -98,6 +101,7 @@ pub(all) struct SourcePos {
   col : Int
 } derive(Compare, Eq)
 pub impl Show for SourcePos
+pub impl @debug.Debug for SourcePos
 
 // Type aliases
 
