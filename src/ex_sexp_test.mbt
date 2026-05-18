@@ -8,7 +8,16 @@ enum Sexp {
 impl Show for Sexp with output(self, logger) {
   match self {
     Atom(s) => logger.write_string(s)
-    List(xs) => logger.write_object(xs.iter())
+    List(xs) => {
+      logger.write_char('[')
+      for i, x in xs {
+        if i > 0 {
+          logger.write_string(", ")
+        }
+        logger.write_object(x)
+      }
+      logger.write_char(']')
+    }
   }
 }
 

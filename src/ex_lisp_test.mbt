@@ -154,6 +154,21 @@ impl Show for ScopeError with output(self, logger) {
 }
 
 ///|
+impl Debug for ScopeError with to_repr(self) {
+  Repr::literal(self.to_string())
+}
+
+///|
+fn scope_error_to_string(f : () -> Tm raise) -> String {
+  try {
+    let _ = f()
+    "Ok"
+  } catch {
+    e => e.to_string()
+  }
+}
+
+///|
 fn Tm::eval(self : Tm, env : Env) -> Val {
   match self {
     App(t, u) =>
@@ -247,10 +262,13 @@ test "chunch" {
 ///|
 test "scope error" {
   let e1 = parser.run(input("(fun x y)"))
-  inspect(try? e1.to_tm(), content="Err(ScopeError: L0:7: y not found in [x])")
+  inspect(
+    scope_error_to_string(() => e1.to_tm()),
+    content="ScopeError: L0:7: y not found in [x]",
+  )
   let e2 = parser.run(input("(fun x (fun y (fun z w)))"))
   inspect(
-    try? e2.to_tm(),
-    content="Err(ScopeError: L0:21: w not found in [x, y, z])",
+    scope_error_to_string(() => e2.to_tm()),
+    content="ScopeError: L0:21: w not found in [x, y, z]",
   )
 }
