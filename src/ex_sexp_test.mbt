@@ -5,7 +5,7 @@ enum Sexp {
 }
 
 ///|
-impl Show for Sexp with output(self, logger) {
+impl Show for Sexp with fn output(self, logger) {
   match self {
     Atom(s) => logger.write_string(s)
     List(xs) => {
@@ -24,18 +24,24 @@ impl Show for Sexp with output(self, logger) {
 ///|
 test "sexp" {
   let buffer = StringBuilder(size_hint=40)
-  let atom = (@simple_parserc.digit | @simple_parserc.alphabetic | @simple_parserc.one_of("+-*/"))
+  let atom = (@simple_parserc.digit |
+    @simple_parserc.alphabetic |
+    @simple_parserc.one_of("+-*/"))
     .many_each(fn(x) { buffer.write_char(x) })
     .map(fn(_) {
       let res = Atom(buffer.to_string())
       buffer.reset()
       res
     })
-  letrec list = fn(input : @simple_parserc.Input) -> (Sexp, @simple_parserc.Input) raise @simple_parserc.ParseError {
+  letrec list = fn(
+    input : @simple_parserc.Input,
+  ) -> (Sexp, @simple_parserc.Input) raise @simple_parserc.ParseError {
     let expr : @simple_parserc.Parser[Sexp] = expr
     expr.discard_spaces().many().round_bracket().map(x => List(x))(input)
   }
-  and expr = fn(input : @simple_parserc.Input) -> (Sexp, @simple_parserc.Input) raise @simple_parserc.ParseError {
+  and expr = fn(
+    input : @simple_parserc.Input,
+  ) -> (Sexp, @simple_parserc.Input) raise @simple_parserc.ParseError {
     @simple_parserc.Parser::lor(list, atom)(input)
   }
 
