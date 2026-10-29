@@ -28,7 +28,7 @@ pub fn[A, B] Parser::map_srcpos(
   input => {
     let { row, col, .. } = input
     let (x, input) = self(input)
-    (f(SourcePos::{ row, col }, x), input)
+    (f(SourcePos::{ row, col, }, x), input)
   }
 }
 

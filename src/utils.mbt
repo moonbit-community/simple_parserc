@@ -1,7 +1,7 @@
 ///|
 #as_free_fn
 pub fn Input::new(chars : StringView) -> Input {
-  Input::{ chars, row: 0, col: 0 }
+  Input::{ chars, row: 0, col: 0, }
 }
 
 ///|
@@ -24,8 +24,12 @@ pub fn[A] Parser::or(x : Parser[A], y : Parser[A]) -> Parser[A] {
 
 ///|
 #as_free_fn
-pub fn ParseError::expect(row~ : Int, col~ : Int, msg : String) -> ParseError {
-  ParseError({ row, col }, @list.List::singleton(msg))
+pub fn ParseError::expect(
+  row~ : Int32,
+  col~ : Int32,
+  msg : String,
+) -> ParseError {
+  ParseError({ row, col, }, @list.List::singleton(msg))
 }
 
 ///|

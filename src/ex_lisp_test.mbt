@@ -6,18 +6,18 @@ enum Raw {
   RVar(Name)
   RApp(Raw, Raw)
   RLam(Name, Raw)
-  RSrcPos(SourcePos, Raw)
+  RSrcPos(@simple_parserc.SourcePos, Raw)
 }
 
 ///|
 enum Tm {
-  Ix(Int)
+  Ix(Int32)
   Lam(Name, Tm)
   App(Tm, Tm)
 }
 
 ///|
-impl Show for Raw with output(self, logger) {
+impl Show for Raw with fn output(self, logger) {
   match self {
     RLam(x, t) => {
       logger.write_string("(\u03bb ")
@@ -39,10 +39,10 @@ impl Show for Raw with output(self, logger) {
 }
 
 ///|
-using @list {cons, empty}
+using @list {cons}
 
 ///|
-impl Show for Tm with output(self, logger) {
+impl Show for Tm with fn output(self, logger) {
   fn dfs(root : Tm, ns : @list.List[Name]) {
     match root {
       App(t, u) => {
@@ -66,13 +66,13 @@ impl Show for Tm with output(self, logger) {
     }
   }
 
-  dfs(self, @list.empty())
+  dfs(self, @list.List([]))
 }
 
 ///|
-let parser : Parser[Raw] = {
-  let buffer = StringBuilder::new(size_hint=40)
-  let name = (digit | alphabetic)
+let parser : @simple_parserc.Parser[Raw] = {
+  let buffer = StringBuilder(size_hint=40)
+  let name = (@simple_parserc.digit | @simple_parserc.alphabetic)
     .many_each(fn(x) { buffer.write_char(x) })
     .map(fn(_) {
       let res = buffer.to_string()
@@ -81,25 +81,31 @@ let parser : Parser[Raw] = {
     })
     .label("name")
   let var_ = name.map(x => RVar(x))
-  letrec lam = fn(input : Input) -> (Raw, Input) raise ParseError {
-    let fun = string("fun").discard_spaces()
+  letrec lam = fn(
+    input : @simple_parserc.Input,
+  ) -> (Raw, @simple_parserc.Input) raise @simple_parserc.ParseError {
+    let fun = @simple_parserc.string("fun").discard_spaces()
     let x = name.discard_spaces()
-    let t = discard_spaces(expr)
+    let t = @simple_parserc.discard_spaces(expr)
     let lam = fun.discard_left(x.bind(x => t.map(t => RLam(x, t))))
     lam.round_bracket()(input)
   }
-  and app = fn(input : Input) -> (Raw, Input) raise ParseError {
-    let t = discard_spaces(expr)
-    let u = discard_spaces(expr)
+  and app = fn(
+    input : @simple_parserc.Input,
+  ) -> (Raw, @simple_parserc.Input) raise @simple_parserc.ParseError {
+    let t = @simple_parserc.discard_spaces(expr)
+    let u = @simple_parserc.discard_spaces(expr)
     let app = t.bind(t => u.map(u => RApp(t, u)))
     app.round_bracket()(input)
   }
-  and expr = fn(input : Input) -> (Raw, Input) raise ParseError {
-    let expr = (lam : Parser[_]) | app | var_
+  and expr = fn(
+    input : @simple_parserc.Input,
+  ) -> (Raw, @simple_parserc.Input) raise @simple_parserc.ParseError {
+    let expr = (lam : @simple_parserc.Parser[_]) | app | var_
     expr.label("expr").map_srcpos((pos, expr) => RSrcPos(pos, expr))(input)
   }
 
-  discard_right(expr, eof(' '))
+  @simple_parserc.discard_right(expr, @simple_parserc.eof(' '))
 }
 
 ///|
@@ -119,7 +125,7 @@ enum Closure {
 
 ///|
 enum Val {
-  VLvl(Int)
+  VLvl(Int32)
   VApp(Val, Val)
   VLam(Name, Closure)
 }
@@ -132,12 +138,12 @@ fn Closure::app(self : Closure, u : Val) -> Val {
 
 ///|
 suberror ScopeError {
-  ScopeError(SourcePos, String, @list.List[String])
+  ScopeError(@simple_parserc.SourcePos, String, @list.List[String])
 }
 
 ///|
-impl Show for ScopeError with output(self, logger) {
-  let ScopeError({ row, col }, x, ctx) = self
+impl Show for ScopeError with fn output(self, logger) {
+  let ScopeError({ row, col, }, x, ctx) = self
   logger.write_string("ScopeError: L\{row}:\{col}: \{x} not found in ")
   logger.write_string("[")
   match ctx.rev() {
@@ -154,8 +160,8 @@ impl Show for ScopeError with output(self, logger) {
 }
 
 ///|
-impl Debug for ScopeError with to_repr(self) {
-  Repr::literal(self.to_string())
+impl Debug for ScopeError with fn to_repr(self) {
+  Repr::literal(Show::to_string(self))
 }
 
 ///|
@@ -182,12 +188,12 @@ fn Tm::eval(self : Tm, env : Env) -> Val {
 }
 
 ///|
-fn lvl_to_ix(len : Int, ix : Int) -> Int {
+fn lvl_to_ix(len : Int32, ix : Int32) -> Int32 {
   len - ix - 1
 }
 
 ///|
-fn Val::quote(self : Val, len : Int) -> Tm {
+fn Val::quote(self : Val, len : Int32) -> Tm {
   match self {
     VApp(t, u) => {
       let f = t.quote(len)
@@ -211,7 +217,11 @@ fn Tm::nf(self : Tm, env : Env) -> Tm {
 
 ///|
 fn Raw::to_tm(self : Raw) -> Tm raise {
-  fn dfs(raw : Raw, ns : @list.List[Name], pos : SourcePos) -> Tm raise {
+  fn dfs(
+    raw : Raw,
+    ns : @list.List[Name],
+    pos : @simple_parserc.SourcePos,
+  ) -> Tm raise {
     match raw {
       RLam(x, t) => Lam(x, dfs(t, cons(x, ns), pos))
       RApp(t, u) => App(dfs(t, ns, pos), dfs(u, ns, pos))
@@ -225,7 +235,7 @@ fn Raw::to_tm(self : Raw) -> Tm raise {
     }
   }
 
-  dfs(self, empty(), SourcePos::{ row: 0, col: 0 })
+  dfs(self, @list.List([]), @simple_parserc.SourcePos::{ row: 0, col: 0, })
 }
 
 ///|
@@ -247,12 +257,12 @@ test "chunch" {
   let five = five.to_tm()
   let add = add.to_tm()
   let mul = mul.to_tm()
-  let ten = App(App(add, five), five).nf(empty())
+  let ten = App(App(add, five), five).nf(@list.List([]))
   inspect(
     ten,
     content="(λ f.(λ x.(f (f (f (f (f (f (f (f (f (f x))))))))))))",
   )
-  let nat_25 = App(App(mul, five), five).nf(empty())
+  let nat_25 = App(App(mul, five), five).nf(@list.List([]))
   inspect(
     nat_25,
     content="(λ f.(λ x.(f (f (f (f (f (f (f (f (f (f (f (f (f (f (f (f (f (f (f (f (f (f (f (f (f x)))))))))))))))))))))))))))",

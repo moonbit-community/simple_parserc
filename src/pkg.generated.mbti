@@ -25,19 +25,25 @@ pub(all) suberror ParseError {
 }
 pub fn ParseError::cons(Self, String) -> Self
 #as_free_fn
-pub fn ParseError::expect(row~ : Int, col~ : Int, String) -> Self
+pub fn ParseError::expect(row~ : Int32, col~ : Int32, String) -> Self
+pub fn ParseError::output(Self, &Logger) -> Unit
 pub fn ParseError::source_pos(Self) -> SourcePos
+pub fn ParseError::to_repr(Self) -> @debug.Repr
+pub fn ParseError::to_string(Self) -> String
 pub impl Show for ParseError
 pub impl @debug.Debug for ParseError
 
 // Types and methods
 pub(all) struct Input {
   chars : StringView
-  row : Int
-  col : Int
+  row : Int32
+  col : Int32
 }
 #as_free_fn
 pub fn Input::new(StringView) -> Self
+pub fn Input::output(Self, &Logger) -> Unit
+pub fn Input::to_repr(Self) -> @debug.Repr
+pub fn Input::to_string(Self) -> String
 pub impl Show for Input
 pub impl @debug.Debug for Input
 
@@ -68,6 +74,7 @@ pub fn[A, B] Parser::foldr(Self[A], Self[B], Self[(B, A) -> B]) -> Self[B]
 pub fn[A] Parser::foldr1(Self[A], Self[(A, A) -> A]) -> Self[A]
 #as_free_fn
 pub fn[A] Parser::label(Self[A], String) -> Self[A]
+pub fn[A] Parser::lor(Self[A], Self[A]) -> Self[A]
 #as_free_fn
 pub fn[A] Parser::many(Self[A]) -> Self[Array[A]]
 #as_free_fn
@@ -97,13 +104,22 @@ pub fn Parser::string(String) -> Self[String]
 pub impl[A] BitOr for Parser[A]
 
 pub(all) struct SourcePos {
-  row : Int
-  col : Int
+  row : Int32
+  col : Int32
 } derive(Compare, Eq)
+pub fn SourcePos::compare(Self, Self) -> Int32
+pub fn SourcePos::equal(Self, Self) -> Bool
+pub fn SourcePos::not_equal(Self, Self) -> Bool
+pub fn SourcePos::op_ge(Self, Self) -> Bool
+pub fn SourcePos::op_gt(Self, Self) -> Bool
+pub fn SourcePos::op_le(Self, Self) -> Bool
+pub fn SourcePos::op_lt(Self, Self) -> Bool
+pub fn SourcePos::output(Self, &Logger) -> Unit
+pub fn SourcePos::to_repr(Self) -> @debug.Repr
+pub fn SourcePos::to_string(Self) -> String
 pub impl Show for SourcePos
 pub impl @debug.Debug for SourcePos
 
 // Type aliases
 
 // Traits
-

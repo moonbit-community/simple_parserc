@@ -2,13 +2,13 @@
 #as_free_fn
 pub fn Parser::satisfy(f : (Char) -> Bool, label~ : String) -> Parser[Char] {
   input => {
-    let { chars, row, col } = input
+    let { chars, row, col, } = input
     match chars {
       [x, .. chars] if f(x) =>
         if x == '\n' {
-          (x, Input::{ chars, row: row + 1, col: 0 })
+          (x, Input::{ chars, row: row + 1, col: 0, })
         } else {
-          (x, Input::{ ..input, chars, col: col + 1 })
+          (x, Input::{ ..input, chars, col: col + 1, })
         }
       _ => raise expect(row~, col~, label)
     }
@@ -38,14 +38,14 @@ pub fn Parser::none_of(xs : String) -> Parser[Char] {
 pub fn Parser::string(str : String) -> Parser[String] {
   input => {
     guard !str.contains_char('\n') else { panic() }
-    let { chars, row, col } = input
+    let { chars, row, col, } = input
     let len = str.length()
     guard chars.length() >= len && chars.view(end_offset=len) == str else {
       raise expect(row~, col~, str)
     }
     (
       str,
-      Input::{ ..input, chars: chars.view(start_offset=len), col: col + len },
+      Input::{ ..input, chars: chars.view(start_offset=len), col: col + len, },
     )
   }
 }
@@ -54,7 +54,7 @@ pub fn Parser::string(str : String) -> Parser[String] {
 #as_free_fn
 pub fn[A] Parser::eof(x : A) -> Parser[A] {
   input => {
-    let { chars, row, col } = input
+    let { chars, row, col, } = input
     match chars {
       [] => (x, input)
       _ => raise expect(row~, col~, "eof")

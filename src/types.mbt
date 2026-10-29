@@ -1,12 +1,12 @@
 ///|
 pub(all) struct SourcePos {
-  row : Int
-  col : Int
+  row : Int32
+  col : Int32
 } derive(Eq, Compare)
 
 ///|
-pub impl Show for SourcePos with output(self, logger) {
-  let { row, col } = self
+pub impl Show for SourcePos with fn output(self, logger) {
+  let { row, col, } = self
   logger.write_string("{row: ")
   logger.write_object(row)
   logger.write_string(", col: ")
@@ -15,22 +15,22 @@ pub impl Show for SourcePos with output(self, logger) {
 }
 
 ///|
-pub impl Debug for SourcePos with to_repr(self) {
+pub impl Debug for SourcePos with fn to_repr(self) {
   Repr::literal(self.to_string())
 }
 
 ///|
 pub(all) struct Input {
   chars : StringView
-  row : Int
-  col : Int
+  row : Int32
+  col : Int32
 }
 
 ///|
-pub impl Show for Input with output(self, logger) {
-  let { chars, row, col } = self
+pub impl Show for Input with fn output(self, logger) {
+  let { chars, row, col, } = self
   logger.write_string("{chars: ")
-  logger.write_object(chars)
+  logger.write_object(@debug.Repr(chars.to_owned()))
   logger.write_string(", row: ")
   logger.write_object(row)
   logger.write_string(", col: ")
@@ -39,7 +39,7 @@ pub impl Show for Input with output(self, logger) {
 }
 
 ///|
-pub impl Debug for Input with to_repr(self) {
+pub impl Debug for Input with fn to_repr(self) {
   Repr::literal(self.to_string())
 }
 
@@ -52,8 +52,8 @@ pub(all) suberror ParseError {
 pub(all) struct Parser[A]((Input) -> (A, Input) raise ParseError)
 
 ///|
-pub impl Show for ParseError with output(self, logger) {
-  let ParseError({ row, col }, xs) = self
+pub impl Show for ParseError with fn output(self, logger) {
+  let ParseError({ row, col, }, xs) = self
   logger.write_string("\nParse Error:\{row}:\{col}:\n")
   for msg in xs {
     logger.write_string("    \{msg} is expected\n")
@@ -61,6 +61,6 @@ pub impl Show for ParseError with output(self, logger) {
 }
 
 ///|
-pub impl Debug for ParseError with to_repr(self) {
+pub impl Debug for ParseError with fn to_repr(self) {
   Repr::literal(self.to_string())
 }

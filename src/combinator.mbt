@@ -1,5 +1,5 @@
 ///|
-pub impl[A] BitOr for Parser[A] with lor(x, y) {
+pub impl[A] BitOr for Parser[A] with fn lor(x, y) {
   input => {
     x(input) catch {
       e =>

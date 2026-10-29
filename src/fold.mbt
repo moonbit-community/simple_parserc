@@ -9,7 +9,8 @@ pub fn[A, B] Parser::foldl(
     let (z, zr) = z(input)
     let mut rest = zr
     let mut acc = z
-    while (try? f(rest)) is Ok((f, fr)) && (try? x(fr)) is Ok((x, xr)) {
+    while (Ok(f(rest)) catch { e => Err(e) }) is Ok((f, fr)) &&
+          (Ok(x(fr)) catch { e => Err(e) }) is Ok((x, xr)) {
       acc = f(acc, x)
       rest = xr
     }
@@ -27,7 +28,8 @@ pub fn[A, B] Parser::foldr(
   input => {
     let buffer = []
     let mut rest = input
-    while (try? x(rest)) is Ok((x, xr)) && (try? f(xr)) is Ok((f, fr)) {
+    while (Ok(x(rest)) catch { e => Err(e) }) is Ok((x, xr)) &&
+          (Ok(f(xr)) catch { e => Err(e) }) is Ok((f, fr)) {
       buffer.push((x, f))
       rest = fr
     }
@@ -60,7 +62,7 @@ pub fn[A] Parser::many_each(x : Parser[A], f : (A) -> Unit) -> Parser[Unit] {
     let r = x(input)
     f(r.0)
     let mut rest = r.1
-    while (try? x(rest)) is Ok((v, vr)) {
+    while (Ok(x(rest)) catch { e => Err(e) }) is Ok((v, vr)) {
       f(v)
       rest = vr
     }
