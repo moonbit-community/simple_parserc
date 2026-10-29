@@ -23,23 +23,23 @@ impl Show for Sexp with output(self, logger) {
 
 ///|
 test "sexp" {
-  let buffer = StringBuilder::new(size_hint=40)
-  let atom = (digit | alphabetic | one_of("+-*/"))
+  let buffer = StringBuilder(size_hint=40)
+  let atom = (@simple_parserc.digit | @simple_parserc.alphabetic | @simple_parserc.one_of("+-*/"))
     .many_each(fn(x) { buffer.write_char(x) })
     .map(fn(_) {
       let res = Atom(buffer.to_string())
       buffer.reset()
       res
     })
-  letrec list = fn(input : Input) -> (Sexp, Input) raise ParseError {
-    let expr : Parser[Sexp] = expr
+  letrec list = fn(input : @simple_parserc.Input) -> (Sexp, @simple_parserc.Input) raise @simple_parserc.ParseError {
+    let expr : @simple_parserc.Parser[Sexp] = expr
     expr.discard_spaces().many().round_bracket().map(x => List(x))(input)
   }
-  and expr = fn(input : Input) -> (Sexp, Input) raise ParseError {
-    Parser::lor(list, atom)(input)
+  and expr = fn(input : @simple_parserc.Input) -> (Sexp, @simple_parserc.Input) raise @simple_parserc.ParseError {
+    @simple_parserc.Parser::lor(list, atom)(input)
   }
 
-  let expr : Parser[Sexp] = expr
+  let expr : @simple_parserc.Parser[Sexp] = expr
   inspect(atom.run(input("1232")), content="1232")
   inspect(expr.run(input("(1 2 3 4 5 6)")), content="[1, 2, 3, 4, 5, 6]")
   inspect(

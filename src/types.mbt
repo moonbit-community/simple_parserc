@@ -30,7 +30,7 @@ pub(all) struct Input {
 pub impl Show for Input with output(self, logger) {
   let { chars, row, col } = self
   logger.write_string("{chars: ")
-  logger.write_object(chars)
+  logger.write_object(@debug.Repr(chars))
   logger.write_string(", row: ")
   logger.write_object(row)
   logger.write_string(", col: ")
