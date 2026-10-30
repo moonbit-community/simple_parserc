@@ -40,13 +40,10 @@ pub fn Parser::string(str : String) -> Parser[String] {
     guard !str.contains_char('\n') else { panic() }
     let { chars, row, col, } = input
     let len = str.length()
-    guard chars.length() >= len && chars.view(end_offset=len) == str else {
+    guard chars.length() >= len && chars[:len] == str else {
       raise expect(row~, col~, str)
     }
-    (
-      str,
-      Input::{ ..input, chars: chars.view(start_offset=len), col: col + len, },
-    )
+    (str, Input::{ ..input, chars: chars[len:], col: col + len, })
   }
 }
 
